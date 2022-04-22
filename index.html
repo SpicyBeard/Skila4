@@ -70,7 +70,7 @@
 
 
       form.addEventListener('submit', function(e) {
-        console.log($('#username_password').val());
+        // console.log($('#username_password').val());
         e.preventDefault();
         if (input.value) {
           socket.emit('chat message', {value:input.value, password:$('#username_password').val()});
@@ -92,7 +92,7 @@
       })
 
       socket.on('display', (data)=>{
-        console.log(data);
+        // console.log(data);
         if(data.typing==true)
           $('.typing').text(`${data.userName} is typing...`)
         else
@@ -134,7 +134,7 @@
       //   window.scrollTo(0, document.body.scrollHeight);
       //   });
       socket.on('chat message', function(msg, username) {
-        console.log(msg.value);
+        // console.log(msg.value);
         var item = document.createElement('li');
         item.textContent = username + ' wrote: ' + msg.value;
         messages.appendChild(item);

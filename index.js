@@ -46,14 +46,14 @@ io.on('connection', (socket) => {
       socket.userName = username.username;
   });
   socket.on('chat message', (msg) => {
-      console.log(msg.password);
-      console.log('message: ' + msg);
+      // console.log(msg.password);
+      console.log(socket.userName + ' said: ' + msg.value);
       if (msg.password === realPassword)
         io.emit('chat message', msg, socket.userName);
   });
   socket.on('typing', (data)=>{
     data.userName = socket.userName;
-    console.log(data);
+    // console.log(data);
     if(data.typing==true) {
       if (data.password === realPassword)
         io.emit('display', data)
