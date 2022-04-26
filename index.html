@@ -73,7 +73,7 @@
         // console.log($('#username_password').val());
         e.preventDefault();
         if (input.value) {
-          socket.emit('chat message', {value:input.value, password:$('#username_password').val()});
+          socket.emit('chat_message', {value:input.value, password:$('#username_password').val()});
           input.value = '';
         }
       });
@@ -133,13 +133,19 @@
       //   messages.appendChild(item);
       //   window.scrollTo(0, document.body.scrollHeight);
       //   });
-      socket.on('chat message', function(msg, username) {
+      socket.on('chat_message', function(msg, username) {
         // console.log(msg.value);
         var item = document.createElement('li');
-        item.textContent = username + ' wrote: ' + msg.value;
+        item.textContent = username + ': ' + msg.value;
         messages.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);
       });
+      socket.on('initialize_chat', (chat_message)=> {
+        for(let i=0; i<chat_message.length; i++) {
+          $('#messages').append('<li>'+chat_message[i].user+': '+chat_message[i].msg.value,'</li>');
+        };
+      });
+
     </script>
   </body>
 </html>
