@@ -52,6 +52,7 @@ mongo.connect('mongodb://127.0.0.1/chatserver_msg',{useUnifiedTopology: true}, f
       console.log(result);
       socket.emit('initialize_chat',result);
     });
+    // Velja notendanafn
     socket.on('choose_nick', (username) => {
       console.log('username: ' + username.username);
       if (username.password === realPassword)
@@ -59,11 +60,10 @@ mongo.connect('mongodb://127.0.0.1/chatserver_msg',{useUnifiedTopology: true}, f
     });
     socket.on('chat_message', (msg) => {
         // console.log(msg.password);
-
+        // Logga skilaboð frá notanda í console
         console.log(socket.userName + ' said: ' + msg.value);
         if (msg.password === realPassword)
           chatdb.collection('messages').insertOne({user: socket.userName,msg:msg});
-          //io.emit('chatmsg',msg);
           io.emit('chat_message', msg, socket.userName);
     });
     socket.on('typing', (data)=>{
