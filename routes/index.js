@@ -24,7 +24,7 @@ router.post('/', (req, res) => {
 	res.redirect('/'+password);
 });
 
-router.get('/ligmab', (req, res) => { 
+router.get('/BigBen', (req, res) => { 
     res.sendFile(path.join(__dirname + '/index.html')); 
     // með næstu skipun getum við séð í console hvenær beiðni barst 
     console.log('Site visitor arrived at: '+req.requestTime); 
