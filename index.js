@@ -79,42 +79,6 @@ mongo.connect('mongodb://127.0.0.1/chatserver_msg',{useUnifiedTopology: true}, f
   });
 });
 
-// io.on('connection', (socket) => {
-//   //Hækka fjölda innskráðra
-//   connectedUsers++;
-//   //Látum aðra vita að fjöldi breyttist.
-//   io.emit('Connected users changed', connectedUsers);
-//   console.log('user connected');
-//   socket.on('disconnect', () => {
-//     //Lækka fjölda innskráðra
-//     connectedUsers--;
-//     //Látum aðra vita að fjöldi breyttist.
-//     io.emit('Connected users changed', connectedUsers);
-//     console.log('user disconnected');
-//   });
-//   socket.on('choose_nick', (username) => {
-//     console.log('username: ' + username.username);
-//     if (username.password === realPassword)
-//       socket.userName = username.username;
-//   });
-//   socket.on('chat message', (msg) => {
-//       // console.log(msg.password);
-//       console.log(socket.userName + ' said: ' + msg.value);
-//       if (msg.password === realPassword)
-//         io.emit('chat message', msg, socket.userName);
-//   });
-//   socket.on('typing', (data)=>{
-//     data.userName = socket.userName;
-//     // console.log(data);
-//     if(data.typing==true) {
-//       if (data.password === realPassword)
-//         io.emit('display', data)
-//     }
-//     else
-//       io.emit('display', data)
-//   })
-// });
-
 server.listen(3000, () => {
   console.log('listening on *:3000');
 });
