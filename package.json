@@ -9,6 +9,6 @@
         "socket.io": "^4.4.1"
     },
     "scripts": {
-        "start": "nodemon index.js"
+        "start": "nodemon ChatServer.js"
     }
 }

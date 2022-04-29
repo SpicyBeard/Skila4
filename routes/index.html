@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Socket.IO chat</title>
+    <style>
+      body { margin: 0; padding-bottom: 3rem; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+
+      #form { background: rgba(0, 0, 0, 0.15); padding: 0.25rem; position: fixed; bottom: 0; left: 0; right: 0; display: flex; height: 3rem; box-sizing: border-box; backdrop-filter: blur(10px); }
+      #input { border: none; padding: 0 1rem; flex-grow: 1; border-radius: 2rem; margin: 0.25rem; }
+      #input:focus { outline: none; }
+      #form > button { background: #333; border: none; padding: 0 1rem; margin: 0.25rem; border-radius: 3px; outline: none; color: #fff; }
+
+      #messages { list-style-type: none; margin: 0; padding: 0; }
+      #messages > li { padding: 0.5rem 1rem; }
+      #messages > li:nth-child(odd) { background: #efefef; }
+      #connected_users { position: fixed; top: 50px; right: 50px; font-weight: bold; background-color: black; color: yellow; padding: 0px 4px 3px 4px; }
+      #username_div { position: absolute; top: 40%; right: 40%; left: 40% }
+      .typing { background: rgba(0, 0, 0, 0.75); color: yellow; position: fixed; bottom: 15%; right: 2%}
+    </style>
+    <script
+    src="https://code.jquery.com/jquery-3.6.0.js"
+    integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+    crossorigin="anonymous"></script>
+  </head>
+  <body>
+    
+    <!-- <ul id="messages"></ul>
+    <ul id="connected_users"></ul>
+    <form id="form" action="">
+      <input id="input" autocomplete="off" /><button>Send</button>
+    </form> -->
+    <div class="typing"></div>
+    <div id="username_div">      
+      <input id="username_input" autocomplete="off" />
+      <input id="username_password" type="password">
+      <button id="pick_username_btn">Select username</button>
+    </div>    
+    <div id="chat_div">
+      <ul id="messages"></ul>
+      <ul id="connected_users"></ul>
+      <form id="form" action="">
+        <input id="input" autocomplete="off" /><button>Send</button><button id="username_btn">Change name</button>
+      </form>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    
+    <script>
+      $('#username_div').show();
+      $('#chat_div').hide();
+      $('#username_password').hide();
+      $('#username_btn').on('click', () => {
+        $('#chat_div').hide();
+        $('#username_div').show();
+      });     
+
+      var socket = io();
+        
+      var messages = document.getElementById('messages');
+      var userList = document.getElementById('connected_users')
+      var form = document.getElementById('form');
+      var input = document.getElementById('input');
+      var typing = false;
+      var timeout = undefined;
+      var username;
+      
+      function typingTimeout(){
+        typing=false
+        socket.emit('typing', {username:username, typing:false})
+      }
+
+
+      form.addEventListener('submit', function(e) {
+        // console.log($('#username_password').val());
+        e.preventDefault();
+        if (input.value) {
+          socket.emit('chat_message', {value:input.value, password:$('#username_password').val()});
+          input.value = '';
+        }
+      });
+
+      $(document).ready(function(){
+      $('#input').keypress((e)=>{
+        if(e.which!=13){
+          typing=true
+          socket.emit('typing', {username:username, typing:true, password:$('#username_password').val()})
+          clearTimeout(timeout)
+          timeout = setTimeout(typingTimeout, 3000)
+        }else{
+          clearTimeout(timeout)
+          typingTimeout()
+        }
+      })
+
+      socket.on('display', (data)=>{
+        // console.log(data);
+        if(data.typing==true)
+          $('.typing').text(`${data.userName} is typing...`)
+        else
+          $('.typing').text("")
+      })
+ })
+
+      // input.addEventListener('input', function(e) {
+      //   if (input.value != '') {
+      //     typing = true
+      //     socket.emit('typing', {username:username, typing:true})
+      //   }
+      // })
+      
+      $('#pick_username_btn').on('click', () => {
+        let username = $('#username_input').val();
+        let password = $('#username_password');
+        socket.emit('choose_nick', {username:username, password:$('#username_password').val()});
+        $('#username_div').hide();
+        $('#chat_div').show();
+      });
+
+      // socket.on('Connected users changed', (connectedUsers) => {
+      // document.getElementById('connected_users').innerHTML = connectedUsers;
+      // });
+    
+      socket.on('Connected users changed', (connectedUsers) => {
+        userList.innerHTML = connectedUsers;
+        // notendalisti.innerHTML = "";
+        // for (let i=0; i<innskráðir.length; i++) {
+        //   // innskráðir[i] í stað msg
+        // }
+      });
+
+      // socket.on('chat message', function(msg) {
+      //   var item = document.createElement('li');
+      //   item.textContent = msg;
+      //   messages.appendChild(item);
+      //   window.scrollTo(0, document.body.scrollHeight);
+      //   });
+      socket.on('chat_message', function(msg, username) {
+        // console.log(msg.value);
+        var item = document.createElement('li');
+        item.textContent = username + ': ' + msg.value;
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+      });
+      socket.on('initialize_chat', (chat_message)=> {
+        for(let i=0; i<chat_message.length; i++) {
+          $('#messages').append('<li>'+chat_message[i].user+': '+chat_message[i].msg.value,'</li>');
+        };
+      });
+
+    </script>
+  </body>
+</html>
