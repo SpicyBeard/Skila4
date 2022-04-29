@@ -5,7 +5,7 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
 const bodyParser = require('body-parser');
-const realPassword = 'Ligma';
+const realPassword = '';
 const mongo = require('mongodb').MongoClient;
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -18,14 +18,31 @@ var requestTime = (req, res, next) => {
   next(); 
 };
 
-// biðjum um að requestTime milliforritið sé notað 
 app.use(requestTime);
 
-app.get('/', (req, res) => { 
+app.get('/', (req, res) => {
+	res.sendFile(__dirname + '/login.html');
+});
+
+app.post('/', (req, res) => {
+	var password = req.body.password;
+	console.log('innslegið lykilorð var: '+password);
+	res.redirect('/'+password);
+});
+
+// biðjum um að requestTime milliforritið sé notað 
+
+app.get('/ligmab', (req, res) => { 
   res.sendFile(__dirname + '/index.html'); 
   // með næstu skipun getum við séð í console hvenær beiðni barst 
   console.log('Site visitor arrived at: '+req.requestTime); 
 }); 
+
+app.get('/*', (req, res) => {
+	res.sendFile(__dirname + '/No_Access.html');
+	// res.redirect('/');
+});
+
  
 //skila skila4cluster.r12qr.mongodb.net
 mongo.connect('mongodb://127.0.0.1/chatserver_msg',{useUnifiedTopology: true}, function(err,db){
